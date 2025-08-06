@@ -6,7 +6,7 @@
 [![Weights & Biases](https://img.shields.io/badge/Weights_&_Biases-FFCC33?logo=WeightsAndBiases&logoColor=black)](https://wandb.ai/)
 [![arXiv](https://img.shields.io/badge/arXiv-1709.07330-b31b1b.svg)](https://arxiv.org/abs/1709.07330)
 
-An **enhanced implementation** of the H-DenseUNet paper, integrating state-of-the-art deep learning optimization techniques for high-precision automatic liver and tumor segmentation from non-contrast CT scans. This project implements the original 2D-3D hybrid architecture and incorporates cutting-edge techniques including attention mechanisms, progressive training strategies, and advanced data augmentation.
+This project is only intended for understanding and efficiency optimization based on the H-DenseUNet method. An **enhanced implementation** of the H-DenseUNet paper, integrating state-of-the-art deep learning optimization techniques for high-precision automatic liver and tumor segmentation from non-contrast CT scans. This project implements the original 2D-3D hybrid architecture and incorporates cutting-edge techniques including attention mechanisms, progressive training strategies, and advanced data augmentation.
 
 **Paper References**: 
 - Original Paper: Li, Xiaomeng, et al. "H-DenseUNet: hybrid densely connected UNet for liver and tumor segmentation from CT volumes." *IEEE TMI* 37.12 (2018): 2663-2674.
@@ -152,7 +152,6 @@ Contributions are welcome! Please:
 If you use this work in your research, please cite:
 
 ```bibtex
-
 @article{li2018h,
   title={H-DenseUNet: hybrid densely connected UNet for liver and tumor segmentation from CT volumes},
   author={Li, Xiaomeng and Chen, Hao and Qi, Xiaojuan and Dou, Qi and Fu, Chi-Wing and Heng, Pheng-Ann},
