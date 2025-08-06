@@ -1,0 +1,249 @@
+# Enhanced H-DenseUNet Configuration
+# Optimized settings for maximum performance and efficiency
+
+# Data configuration
+data:
+  train_sets:
+    - images: data_Tr/imagesTr
+      labels: data_Tr/labelsTr
+    - images: data_LiTS/images
+      labels: data_LiTS/labels
+  test_set:
+    images: data_Ts/imagesTs
+    labels: data_Ts/labelsTs
+
+# Model architecture parameters
+model:
+  # 2D DenseUNet parameters
+  growth_rate_2d: 32              # Growth rate for 2D dense blocks
+  num_layers_2d: 4                # Number of layers in each dense block
+  
+  # 3D DenseUNet parameters  
+  growth_rate_3d: 16              # Growth rate for 3D dense blocks (reduced for memory)
+  num_layers_3d: 4                # Number of layers in each 3D dense block
+  
+  # Advanced features
+  use_deep_supervision: true      # Enable deep supervision for better training
+  use_attention: true             # Enable attention mechanisms
+  use_pyramid_pooling: true       # Enable pyramid pooling in bottleneck
+  use_gradient_checkpointing: true # Enable gradient checkpointing for memory saving
+
+# Training parameters
+training:
+  # Basic parameters
+  seed: 42
+  learning_rate: 0.001
+  weight_decay: 1e-4
+  
+  # Batch sizes (adjust based on GPU memory)
+  batch_size_2d: 16               # 2D batch size
+  batch_size_3d: 2                # 3D batch size
+  accumulation_steps: 4           # Gradient accumulation steps
+  
+  # Training epochs
+  epochs_2d: 50                   # 2D training epochs
+  epochs_3d: 30                   # 3D + HFF training epochs  
+  epochs_finetune: 20             # End-to-end fine-tuning epochs
+  
+  # Data loading
+  num_workers: 4                  # Number of data loading workers
+  pin_memory: true                # Pin memory for faster GPU transfer
+  
+  # Optimization settings
+  optimizer: 'adamw'              # Optimizer type
+  beta1: 0.9                      # Adam beta1
+  beta2: 0.999                    # Adam beta2
+  eps: 1e-8                       # Adam epsilon
+  
+  # Learning rate scheduling
+  lr_scheduler: 'warmup_cosine'   # Learning rate scheduler
+  warmup_epochs: 10               # Warmup epochs for 2D training
+  warmup_epochs_3d: 5             # Warmup epochs for 3D training
+  min_lr: 1e-6                    # Minimum learning rate
+  
+  # Early stopping
+  early_stopping_patience: 15     # Early stopping patience
+  early_stopping_delta: 0.001     # Minimum improvement threshold
+  
+  # Loss function weights
+  class_weights: [1.0, 1.5, 2.0]  # [background, liver, tumor]
+  loss_weights:
+    ce_weight: 0.4                # Cross-entropy loss weight
+    focal_weight: 0.3             # Focal loss weight  
+    boundary_weight: 0.2          # Boundary loss weight
+    consistency_weight: 0.1       # Consistency loss weight
+  
+  # Advanced loss parameters
+  focal_alpha: 0.7                # Focal loss alpha
+  focal_gamma: 2.0                # Focal loss gamma
+  boundary_alpha: 1.0             # Boundary loss alpha
+  boundary_beta: 1.5              # Boundary loss beta
+  
+  # Regularization
+  dropout_rate_2d: 0.1            # Dropout rate for 2D model
+  dropout_rate_3d: 0.1            # Dropout rate for 3D model
+  mixup_alpha: 0.2                # MixUp alpha parameter
+  cutmix_alpha: 1.0               # CutMix alpha parameter
+  
+  # Gradient clipping
+  max_grad_norm: 1.0              # Maximum gradient norm
+  
+  # Output directory
+  output_dir: 'outputs'
+
+# Data preprocessing parameters
+preprocessing:
+  intensity_clip: [-200, 250]     # CT intensity clipping range
+  resample_size: [256, 256]       # Spatial resampling size
+  depth_size: 16                  # Fixed depth size for 3D processing (统一深度设置)
+  
+  # Normalization
+  normalize_intensity: true       # Enable intensity normalization
+  z_score_normalize: false        # Enable z-score normalization
+  
+  # Advanced preprocessing
+  histogram_matching: false       # Enable histogram matching
+  bias_field_correction: false    # Enable bias field correction
+
+# Data augmentation parameters
+augmentations:
+  # Basic augmentations
+  horizontal_flip: true           # Enable horizontal flipping
+  vertical_flip: false            # Enable vertical flipping
+  rotation_range: [-15, 15]       # Rotation range in degrees
+  scale_range: [0.8, 1.2]         # Scaling range
+  translation_range: 0.1         # Translation range (fraction of image size)
+  
+  # Intensity augmentations
+  brightness_range: [-0.1, 0.1]   # Brightness adjustment range
+  contrast_range: [0.9, 1.1]      # Contrast adjustment range
+  gamma_range: [0.8, 1.2]         # Gamma correction range
+  
+  # Noise augmentations
+  gaussian_noise_std: 0.05        # Gaussian noise standard deviation
+  gaussian_blur_sigma: [0.5, 1.0] # Gaussian blur sigma range
+  
+  # Advanced augmentations
+  elastic_deformation: true       # Enable elastic deformation
+  elastic_alpha: 1000             # Elastic deformation alpha
+  elastic_sigma: 50               # Elastic deformation sigma
+  
+  # MixUp and CutMix
+  mixup_prob: 0.3                 # Probability of applying MixUp
+  cutmix_prob: 0.2                # Probability of applying CutMix
+  
+  # Probability of applying augmentations
+  augment_prob: 0.8               # Overall augmentation probability
+
+# Model ensemble parameters
+ensemble:
+  use_ensemble: false             # Enable model ensemble
+  num_models: 3                   # Number of models in ensemble
+  ensemble_method: 'average'      # Ensemble method: 'average', 'weighted'
+  
+  # Test-time augmentation
+  use_tta: true                   # Enable test-time augmentation
+  tta_transforms: 5               # Number of TTA transforms
+
+# Knowledge distillation parameters
+distillation:
+  use_distillation: false         # Enable knowledge distillation
+  teacher_model_path: null        # Path to teacher model
+  distillation_alpha: 0.7         # Distillation alpha
+  distillation_temperature: 4.0   # Distillation temperature
+
+# Memory optimization
+memory:
+  use_mixed_precision: true       # Enable mixed precision training
+  use_gradient_checkpointing: true # Enable gradient checkpointing
+  optimize_memory: true           # Enable additional memory optimizations
+  clear_cache_frequency: 10       # Clear CUDA cache every N batches
+
+# Logging and monitoring
+logging:
+  use_wandb: false                # Enable Weights & Biases logging
+  project_name: 'h-denseunet-optimized'
+  run_name: 'enhanced_training'
+  log_frequency: 10               # Log every N batches
+  
+  # Metrics to track
+  track_metrics: ['dice', 'iou', 'hausdorff', 'volume_similarity']
+  
+  # Visualization
+  save_predictions: true          # Save prediction examples
+  save_frequency: 5               # Save examples every N epochs
+  num_examples: 5                 # Number of examples to save
+
+# Validation parameters
+validation:
+  use_validation: false           # Enable validation during training
+  validation_split: 0.2           # Validation split ratio
+  validation_frequency: 5         # Validate every N epochs
+  
+  # Cross-validation
+  use_cross_validation: false     # Enable k-fold cross-validation
+  cv_folds: 5                     # Number of CV folds
+
+# Inference parameters
+inference:
+  # Model loading
+  model_path: 'hdenseunet_final.pth'
+  
+  # Inference settings
+  use_sliding_window: true        # Use sliding window inference
+  window_size: [64, 256, 256]     # Sliding window size
+  window_overlap: 0.5             # Window overlap ratio
+  
+  # Post-processing
+  use_postprocessing: true        # Enable post-processing
+  min_component_size: 100         # Minimum connected component size
+  use_morphological_ops: true     # Enable morphological operations
+  
+  # Output settings
+  save_probability_maps: false    # Save probability maps
+  save_uncertainty_maps: false    # Save uncertainty maps
+
+# Hardware optimization
+hardware:
+  # GPU settings
+  gpu_ids: [0]                    # GPU IDs to use
+  distributed_training: false     # Enable distributed training
+  
+  # CPU settings
+  num_threads: 8                  # Number of CPU threads
+  
+  # Memory settings
+  max_memory_usage: 0.9           # Maximum GPU memory usage (fraction)
+
+# Advanced features
+advanced:
+  # Progressive training
+  use_progressive_training: true  # Enable progressive training
+  progressive_stages: 3           # Number of progressive stages
+  
+  # Curriculum learning
+  use_curriculum_learning: false  # Enable curriculum learning
+  curriculum_epochs: 10           # Epochs for curriculum learning
+  
+  # Self-supervised learning
+  use_self_supervised: false      # Enable self-supervised pre-training
+  ssl_epochs: 20                  # Self-supervised training epochs
+  
+  # Active learning
+  use_active_learning: false      # Enable active learning
+  active_learning_budget: 0.1     # Active learning annotation budget
+  
+  # Meta-learning
+  use_meta_learning: false        # Enable meta-learning
+  meta_learning_tasks: 10         # Number of meta-learning tasks
+
+# Debugging and profiling
+debug:
+  profile_memory: false           # Enable memory profiling
+  profile_compute: false          # Enable compute profiling
+  save_activations: false         # Save intermediate activations
+  gradient_debugging: false       # Enable gradient debugging
+  
+  # Visualization
+  visualize_features: false       # Visualize learned features
+  visualize_attention: false      # Visualize attention maps
