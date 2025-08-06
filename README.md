@@ -152,12 +152,6 @@ Contributions are welcome! Please:
 If you use this work in your research, please cite:
 
 ```bibtex
-@article{enhanced_hdenseunet_2024,
-  title={Enhanced H-DenseUNet: Next-Generation Liver and Tumor Segmentation with Advanced Deep Learning Optimizations},
-  author={Your Name and Contributors},
-  journal={arXiv preprint arXiv:xxxx.xxxxx},
-  year={2024}
-}
 
 @article{li2018h,
   title={H-DenseUNet: hybrid densely connected UNet for liver and tumor segmentation from CT volumes},
